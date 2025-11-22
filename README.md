@@ -1,26 +1,69 @@
+# TLiveQuery – Delphi TDataSet Uyumlu .NET Veri Motoru
 
-# TLiveQuery
+[![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.6-blue)]()
+[![Platform](https://img.shields.io/badge/Platform-WinForms-green)]()
+[![Database](https://img.shields.io/badge/Database-MSSQL-orange)]()
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)]()
 
-Delphi TDataSet / TQuery davranışına benzeyen basit bir .NET Framework 4.6 veri kümesi kütüphanesi.
+TLiveQuery, Delphi’nin `TDataSet / TQuery` davranışını .NET Framework üzerinde birebir modelleyen
+bir veri bileşeni kütüphanesidir. ORM kullanmadan, tamamen DataTable tabanlı çalışan ve Inline SQL ile
+Insert/Edit/Delete/Post süreçlerini yöneten canlı bir dataset motorudur.
 
-Bu solution şu projelerden oluşur:
+## 🚀 Özellikler
+- TDataSet davranışı: Append, Edit, Post, Cancel, Delete
+- Field API: `FieldByName("Name").AsString`
+- Locate: CaseInsensitive + PartialKey
+- Gelişmiş Filter Motoru (auto LIKE, BETWEEN, IN)
+- Range desteği (SetRange / CancelRange)
+- OrderBy (çoklu alan + ASC/DESC)
+- CalcFields desteği
+- MSSQL Identity otomatik alma
+- Primary Key yoksa “OldValues ile güvenli UPDATE”
+- DataGridView ile iki yönlü canlı binding
+- Bookmark desteği
+- RecNo & RecordCount
 
-- **LiveQueryLib**: TLiveQuery sınıfını içeren class library (DLL).
-- **LiveQueryDemo**: WinForms demo (DataGridView + Append/Edit/Post/Delete/Locate/Filter/OrderBy).
+## 📦 Kurulum
+1. Visual Studio’da solution’u açın.
+2. Form1.cs içinde bağlantı cümlenizi düzenleyin:
+   ```csharp
+   _conn = new SqlConnection("Server=.;Database=TestDB;Trusted_Connection=True;");
+   ```
+3. Demo projesini çalıştırın.
 
-## .NET Sürümü
+## 📝 Örnek Kod
+```csharp
+TLiveQuery q = new TLiveQuery(
+    "SELECT Id, FirstName, LastName FROM Employees", conn);
 
-- .NET Framework 4.6
-- Visual Studio 2015+ ile uyumlu (VS 2022 dahil)
+q.OnCalcFields += row =>
+{
+    row["FullName"] = row["FirstName"] + " " + row["LastName"];
+};
 
-## Kullanim
+q.Open();
 
-1. `TLiveQuerySolution.sln` dosyasını Visual Studio ile açın.
-2. `Form1.cs` içindeki bağlantı cümlesini kendi MSSQL ayarlarınıza göre güncelleyin.
-3. `Employees` tablosunda en az şu alanlar olmalı:
-   - `Id` (int, identity, primary key)
-   - `FirstName` (nvarchar)
-   - `LastName` (nvarchar)
-   - `Title` (nvarchar)
-4. Çözümü build edin ve `LiveQueryDemo` projesini çalıştırın.
+q.Append();
+q.FieldByName("FirstName").AsString = "Kazım";
+q.FieldByName("LastName").AsString = "Çetin";
+q.Post();
+```
 
+## 🔍 Locate
+```csharp
+q.Locate("FirstName", "kaz",
+    LocateOptions.CaseInsensitive | LocateOptions.PartialKey);
+```
+
+## 🔎 Filter
+```csharp
+q.SetFilter("FirstName contains 'az' AND Age > 30");
+```
+
+## 🔄 OrderBy
+```csharp
+q.OrderBy("FirstName DESC, Age ASC");
+```
+
+## 📄 Lisans
+MIT License
