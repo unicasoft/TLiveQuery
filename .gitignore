@@ -1,0 +1,23 @@
+
+## Build artefacts
+bin/
+obj/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## NuGet
+packages/
+*.nupkg
+*.snupkg
+
+## Logs / temp
+*.log
+*.tmp
